@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+  </head>
+  <body>
+    <h1>Translate</h1>
+    <form action="" onsubmit="sendMessage(event)">
+      <select name="lang" id="lang">
+        <option value="eng_Latn">English</option>
+        <option value="deu_Latn">German</option>
+      </select>
+      <input type="text" id="messageText" autocomplete="off" />
+      <button>Send</button>
+    </form>
+    <div id="messages">
+      <p id="translation"></p>
+    </div>
+    <script>
+      let client_id = Date.now();
+      let ws = new WebSocket(`ws://nllbapi-production.up.railway.app/ws/stream/${client_id}`);
+      ws.onmessage = function (event) {
+        let pEl = document.getElementById("translation");
+        pEl.innerText += " " + event.data;
+      };
+      function sendMessage(event) {
+        let input = document.getElementById("messageText");
+        let lang = document.getElementById("lang").value;
+        console.log(lang);
+        let pEl = document.getElementById("translation");
+        pEl.innerText = "";
+        ws.send(JSON.stringify({ text: input.value, lang: lang }));
+        input.value = "";
+        event.preventDefault();
+      }
+    </script>
+  </body>
+</html>
